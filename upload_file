@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Repositories\Backend\TemplateLayouts;
+
+use DB;
+use Carbon\Carbon;
+use App\Models\TemplateLayouts\Templatelayout;
+use App\Exceptions\GeneralException;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
+
+
+/**
+ * Class TemplatelayoutRepository.
+ */
+class TemplatelayoutRepository extends BaseRepository
+{
+   
+    public function create(array $input)
+    {
+        if (isset($input['img_logo'])) {
+            $logopath = $this->uploadImage($input, 'img_logo');
+            $input_logo = json_decode($input['logo'], false);
+            $input_logo->icon = $logopath;
+            $input['logo'] = json_encode($input_logo);
+        //    print_r($input_logo);
+        //    die;
+        }
+      
+        $templatelayout = DB::table('template_layouts')->insert([
+            'template_id'=> $input['template_id'],
+            'title'=> $input['title'],
+            'logo'=> $input['logo'],
+            'info1'=> $input['info1']
+        ]);
+        if($templatelayout) {
+            return true;
+        }
+        throw new GeneralException(trans('exceptions.backend.templatelayouts.create_error;'));
+    }
+
+   
+    public function uploadImage($input,$name)
+    {
+        $template_id = $input['template_id'];
+        $image = $input[$name];
+        $name =  $image->getClientOriginalName();
+        $img_name = pathinfo($name, PATHINFO_FILENAME);
+        $img_ext = pathinfo($name, PATHINFO_EXTENSION);
+        $fullname = $img_name . rand(10, 1000) . "." . $img_ext;
+        $image->move('images/Cardicons/template_id_'.$template_id.'/', $fullname);
+        $assetpath = 'images/Cardicons/template_id_' . $template_id . '/' . $fullname;
+        return $assetpath;
+    }
+}
