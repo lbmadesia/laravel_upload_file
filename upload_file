@@ -52,4 +52,27 @@ class TemplatelayoutRepository extends BaseRepository
         $assetpath = 'images/Cardicons/template_id_' . $template_id . '/' . $fullname;
         return $assetpath;
     }
+    
+    public function uploadImage2($input,$name)
+    {
+        if($request->file('image') != null){
+  
+            $image = $request->file('image');
+            $imageName = time().'.'.$image->extension();  
+            $image->move(public_path('images'), $imageName);
+            $resualt->image = public_path('images').'/'.$imageName;
+               
+           }else{
+     
+             $resualt->image = "empty";
+     
+           }
+    }
 }
+
+
+/*  ('images')}}/{{$data->image}}" alt="image" download>
+									   
+										 <i class='fa fa-download'></i> <span>Downloads</span>
+								      
+									     </a> */
