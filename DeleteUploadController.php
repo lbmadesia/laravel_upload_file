@@ -84,6 +84,23 @@ class DeleteUploadController extends Controller
             return $input;
         }
     }
+    
+       public function uploadmultipleImage($input)
+       {
+        if (isset($input['filename']) && !empty($input['filename'])) {
+
+            foreach ($input['filename'] as $images) {
+                $name = $images->getClientOriginalName();
+                $img_name = pathinfo($name, PATHINFO_FILENAME);
+                $img_ext = pathinfo($name, PATHINFO_EXTENSION);
+                $fullname = $img_name . rand(10, 1000) . "." . $img_ext;
+                $images->move('images/products/', $fullname);
+                $input['filename'] = "images/products/" . $fullname;
+                $data[] = $input['filename'];
+            }
+            return $input2 = $data;
+        }
+    
     public function deleteOldFile($model)
     {
         $fileName = $model->featured_file;
